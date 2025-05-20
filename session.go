@@ -6,16 +6,16 @@ import (
 )
 
 type ISessionT[K comparable, T any] interface {
-	Add(k K, bean *T)
-	Get(k K, life int) *T
+	Add(k K, bean T)
+	Get(k K, life int) (T, bool)
 }
 
 type sessionBeanT[T any] struct {
-	bean *T
+	bean T
 	t    time.Time
 }
 
-func newSessionBeanT[T any](bean *T) *sessionBeanT[T] {
+func newSessionBeanT[T any](bean T) *sessionBeanT[T] {
 	return &sessionBeanT[T]{bean: bean, t: time.Now()}
 }
 
@@ -29,21 +29,21 @@ func NewSessionT[K comparable, V any](cache int) *SessionT[K, V] {
 	return &SessionT[K, V]{sessions: s, size: cache}
 }
 
-func (s *SessionT[K, V]) Get(key K, life int) *V {
+func (s *SessionT[K, V]) Get(key K, life int) (value V, ok bool) {
 
 	bean, ok := s.sessions.Get(key)
 	if ok {
 
 		i := int(time.Now().Sub(bean.t).Seconds())
 		if i > life {
-			return nil
+			return
 		}
-		return bean.bean
+		return bean.bean, true
 	}
-	return nil
+	return
 }
 
-func (s *SessionT[K, T]) Add(Key K, bean *T) {
+func (s *SessionT[K, T]) Add(Key K, bean T) {
 
 	s.sessions.Add(Key, newSessionBeanT(bean))
 
