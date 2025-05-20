@@ -1,0 +1,14 @@
+.idea
+*.vsdx
+*.zip
+*.awdb
+bin
+*.log
+v5api
+*.pb.go
+testapi
+flowapi
+testpool
+distunnel
+datas
+test.txt
